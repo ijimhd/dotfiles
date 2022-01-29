@@ -30,8 +30,16 @@ keys = [
              lazy.spawn(myBrowser),
              desc='Brave'
              ),
+         Key([mod], "n",
+             lazy.spawn(myFM),
+             desc='Nautilus'
+             ),
+         Key([mod], "g",
+             lazy.spawn(myTE),
+             desc='Gedit'
+             ),
          Key([mod], "s",
-             lazy.spawn(myTerm +' -e gedit .config/qtile/config.py'),
+             lazy.spawn("gedit /home/ijimhd/.config/qtile/config.py"),
              desc='config.py'
              ),
          Key([mod], "Tab",
@@ -244,7 +252,7 @@ def init_widgets_list():
               widget.Image(
                        filename = "~/.config/qtile/icons/python-white.png",
                        scale = "False",
-                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm)}
+                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn("/home/ijimhd/.config/rofi/applets/android/powermenu.sh")}
                        ),
               widget.Sep(
                        linewidth = 0,
