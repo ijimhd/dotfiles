@@ -16,6 +16,8 @@ from battery import get_battery_icon
 mod = "mod4"              # Sets mod key to SUPER/WINDOWS
 myTerm = "alacritty"      # My terminal of choice
 myBrowser = "brave"       # My terminal of choice
+myFM = "nautilus"
+myTE = "gedit"
 keys = [
          ### The essentials
          Key([mod], "Return",
