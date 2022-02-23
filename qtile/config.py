@@ -15,9 +15,9 @@ from battery import get_battery_icon
 
 mod = "mod4"              # Sets mod key to SUPER/WINDOWS
 myTerm = "alacritty"      # My terminal of choice
-myBrowser = "brave"       # My terminal of choice
-myFM = "nautilus"
-myTE = "gedit"
+myBrowser = "firefox"       # My browser of choice
+myFM = "nautilus"         # My filemanager of choice
+myTE = "gedit"            # My text editor of choice
 keys = [
          ### The essentials
          Key([mod], "Return",
@@ -25,7 +25,7 @@ keys = [
              desc='Launches My Terminal'
              ),
          Key([mod, "shift"], "Return",
-             lazy.spawn("rofi -show run"),
+             lazy.spawn("/home/ijimhd/.config/rofi/launchers/colorful/launcher.sh"),
              desc='Run Launcher'
              ),
          Key([mod], "b",
@@ -59,15 +59,12 @@ keys = [
          Key([mod, "shift"], "q",
              lazy.shutdown(),
              desc='Shutdown Qtile'
-             ),
+             ),            
 
-         #Volume control
-         Key([mod], "Up", lazy.spawn("pactl set-sink-volume 0 +5%")),
-         Key([mod], "Down", lazy.spawn("pactl set-sink-volume 0 -5%")),
-
-         #Backlight control
-         Key([mod], "Left", lazy.spawn("light -U 5")),
-         Key([mod], "Right", lazy.spawn("light -A 5")),            
+         ###Volume Control
+         Key([], "XF86AudioRaiseVolume", lazy.spawn("pactl set-sink-volume 0 +5%")),
+         Key([], "XF86AudioLowerVolume", lazy.spawn("pactl set-sink-volume 0 -5%")),
+         Key([], "XF86AudioMute", lazy.spawn("pactl set-sink-volume 0 -100%")),
 
          ### Window controls
          Key([mod], "j",
@@ -75,6 +72,14 @@ keys = [
              desc='Move focus down in current stack pane'
              ),
          Key([mod], "k",
+             lazy.layout.up(),
+             desc='Move focus up in current stack pane'
+             ),
+          Key([mod], "Right",
+             lazy.layout.down(),
+             desc='Move focus down in current stack pane'
+             ),
+         Key([mod], "Left",
              lazy.layout.up(),
              desc='Move focus up in current stack pane'
              ),
@@ -88,23 +93,15 @@ keys = [
              lazy.layout.section_up(),
              desc='Move windows up in current stack'
              ),
-         Key([mod], "h",
-             lazy.layout.shrink(),
-             lazy.layout.decrease_nmaster(),
-             desc='Shrink window (MonadTall), decrease number in master pane (Tile)'
+         Key([mod, "shift"], "Right",
+             lazy.layout.shuffle_down(),
+             lazy.layout.section_down(),
+             desc='Move windows down in current stack'
              ),
-         Key([mod], "l",
-             lazy.layout.grow(),
-             lazy.layout.increase_nmaster(),
-             desc='Expand window (MonadTall), increase number in master pane (Tile)'
-             ),
-         Key([mod], "n",
-             lazy.layout.normalize(),
-             desc='normalize window size ratios'
-             ),
-         Key([mod, "shift"], "f",
-             lazy.window.toggle_floating(),
-             desc='toggle floating'
+         Key([mod, "shift"], "Left",
+             lazy.layout.shuffle_up(),
+             lazy.layout.section_up(),
+             desc='Move windows up in current stack'
              ),
          Key([mod], "f",
              lazy.window.toggle_fullscreen(),
@@ -123,42 +120,7 @@ keys = [
          Key([mod, "shift"], "space",
              lazy.layout.toggle_split(),
              desc='Toggle between split and unsplit sides of stack'
-             ),
-         # Dmenu scripts launched using the key chord SUPER+p followed by 'key'
-         KeyChord([mod], "p", [
-             Key([], "e",
-                 lazy.spawn("./dmscripts/dm-confedit"),
-                 desc='Choose a config file to edit'
-                 ),
-             Key([], "i",
-                 lazy.spawn("./dmscripts/dm-maim"),
-                 desc='Take screenshots via dmenu'
-                 ),
-             Key([], "k",
-                 lazy.spawn("./dmscripts/dm-kill"),
-                 desc='Kill processes via dmenu'
-                 ),
-             Key([], "l",
-                 lazy.spawn("./dmscripts/dm-logout"),
-                 desc='A logout menu'
-                 ),
-             Key([], "m",
-                 lazy.spawn("./dmscripts/dm-man"),
-                 desc='Search manpages in dmenu'
-                 ),
-             Key([], "o",
-                 lazy.spawn("./dmscripts/dm-bookman"),
-                 desc='Search your qutebrowser bookmarks and quickmarks'
-                 ),
-             Key([], "r",
-                 lazy.spawn("./dmscripts/dm-reddit"),
-                 desc='Search reddit via dmenu'
-                 ),
-             Key([], "p",
-                 lazy.spawn("passmenu"),
-                 desc='Retrieve passwords with dmenu'
-                 )
-         ])
+             )
 ]
 
 groups = [Group("WWW", layout='monadtall'),
@@ -230,7 +192,8 @@ colors = [["#282c34", "#282c34"],
           ["#51afef", "#51afef"],
           ["#c678dd", "#c678dd"],
           ["#46d9ff", "#46d9ff"],
-          ["#a9a1e1", "#a9a1e1"]]
+          ["#a9a1e1", "#a9a1e1"],
+          ["#353535", "#353535"]]
 
 prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
 
@@ -328,16 +291,17 @@ def init_widgets_list():
               widget.TextBox(
                        text='',
                        font = "Ubuntu Mono",
-                       background = colors[1],
+                       background = colors[10],
                        foreground = colors[7],
                        padding = -16,
-                       fontsize = 37
+                       fontsize = 36
                        ),
               widget.Wlan(
                        disconnected_message = 'Disconnected',
                        fmt = "{}",
                        format = "{essid}",
                        interface = "wlp3s0",
+                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn("/home/ijimhd/.config/rofi/applets/menu/network.sh")},
                        padding = 5,
                        foreground = colors[1],
                        background = colors[7]
@@ -369,7 +333,7 @@ def init_widgets_list():
                        padding=2, 
                        foreground=colors[1], 
                        background=colors[7],
-                       fontsize=25
+                       fontsize=20
                        ),
               widget.Backlight(
                        foreground=colors[1],
@@ -407,6 +371,7 @@ def init_widgets_list():
                        notify_below=0.15,
                        update_interval=3,
                        show_short_text=False,
+                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn('xfce4-power-manager -c')},
                        ),
               widget.TextBox(
                        text = '',
@@ -420,9 +385,8 @@ def init_widgets_list():
                        foreground = colors[1],
                        background = colors[7],
                        format = "%H:%M, %-a %d %b",
-                       timezone = "GMT0",
+                       timezone = "GMT0"
                        ),
-
               ]
     return widgets_list
 
@@ -436,9 +400,9 @@ def init_widgets_screen2():
     return widgets_screen2                 # Monitor 2 will display all widgets in widgets_list
 
 def init_screens():
-    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=0.95, size=20)),
-            Screen(top=bar.Bar(widgets=init_widgets_screen2(), opacity=0.95, size=20)),
-            Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=0.95, size=20))]
+    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=0.8, size=20)),
+            Screen(top=bar.Bar(widgets=init_widgets_screen2(), opacity=0.8, size=20)),
+            Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=0.8, size=20))]
 
 if __name__ in ["config", "__main__"]:
     screens = init_screens()
